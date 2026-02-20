@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Estilos - RUTA ABSOLUTA -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="/warfront-exodus/client/styles.css">
     
     <!-- Three.js y dependencias -->
@@ -45,7 +45,7 @@
     <!-- Canvas para efectos UI -->
     <canvas id="ui-canvas"></canvas>
     
-    <!-- Módulo principal del juego - RUTAS ABSOLUTAS -->
+    <!-- Módulo principal del juego - RUTAS CON MAYÚSCULAS CORRECTAS -->
     <script type="module">
         import GameEngine from '/warfront-exodus/client/src/core/Engine.js';
         import InputManager from '/warfront-exodus/client/src/core/InputManager.js';
@@ -61,7 +61,8 @@
         import MatchManager from '/warfront-exodus/client/src/gameplay/MatchManager.js';
         import DamageSystem from '/warfront-exodus/client/src/gameplay/DamageSystem.js';
         import AIController from '/warfront-exodus/client/src/gameplay/AIController.js';
-        import HUD from '/warfront-exodus/client/src/ui/HUD.js';
+        // CORREGIDO: Mayúsculas según tus archivos
+        import HUD from '/warfront-exodus/client/src/ui/HUD.JS';
         import MenuSystem from '/warfront-exodus/client/src/ui/MenuSystem.js';
         import MobileControls from '/warfront-exodus/client/src/ui/MobileControls.js';
 
@@ -98,7 +99,6 @@
                     
                     this.isInitialized = true;
                     
-                    // Ocultar pantalla de carga, mostrar menú
                     document.getElementById('boot-screen').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('boot-screen').style.display = 'none';
@@ -124,38 +124,32 @@
             }
 
             async initializeSystems() {
-                // Input
                 this.updateLoadingText('Configurando controles...');
                 this.input = new InputManager();
                 this.engine.input = this.input;
                 this.updateLoadingProgress(35);
 
-                // Audio
                 this.updateLoadingText('Inicializando sistema de audio...');
                 this.audio = new AudioSystem(this.engine);
                 this.engine.audio = this.audio;
                 this.updateLoadingProgress(45);
 
-                // Assets
                 this.updateLoadingText('Cargando recursos...');
                 this.assets = new AssetLoader(this.engine);
                 this.engine.assetLoader = this.assets;
                 this.updateLoadingProgress(55);
 
-                // Mundo
                 this.updateLoadingText('Generando mundo alienígena...');
                 this.world = new World(this.engine);
                 this.engine.world = this.world;
                 this.updateLoadingProgress(70);
 
-                // Red
                 this.updateLoadingText('Conectando a servidores...');
                 this.network = new NetworkManager(this.engine);
                 this.engine.network = this.network;
                 await this.network.connect();
                 this.updateLoadingProgress(80);
 
-                // Gameplay
                 this.lobby = new LobbySystem(this.network);
                 this.match = new MatchManager(this.engine);
                 this.engine.matchManager = this.match;
@@ -165,7 +159,6 @@
                 this.engine.aiController = this.ai;
                 this.updateLoadingProgress(90);
 
-                // UI
                 this.hud = new HUD(this.engine);
                 this.engine.hud = this.hud;
                 this.hud.toggleVisibility(false);
@@ -260,13 +253,11 @@
             }
         }
 
-        // Iniciar juego cuando DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
             window.game = new WarfrontExodus();
         });
     </script>
     
-    <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/warfront-exodus/client/sw.js').catch(console.error);
