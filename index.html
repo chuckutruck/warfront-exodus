@@ -13,8 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Estilos -->
-    <link rel="stylesheet" href="client/styles.css">
+    <!-- Estilos - RUTA ABSOLUTA -->
+    <link rel="stylesheet" href="/warfront-exodus/client/styles.css">
     
     <!-- Three.js y dependencias -->
     <script type="importmap">
@@ -24,36 +24,6 @@
             "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
     }
-    </script>
-    
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyANa6zWkGrYQ7O7M6XT2oYbArsZIcs36M8",
-            authDomain: "trip-a9341.firebaseapp.com",
-            databaseURL: "https://trip-a9341-default-rtdb.firebaseio.com",
-            projectId: "trip-a9341",
-            storageBucket: "trip-a9341.firebasestorage.app",
-            messagingSenderId: "379336201132",
-            appId: "1:379336201132:web:34b0b863c3462c12aba009",
-            measurementId: "G-PJQ32ZXJ0B"
-        };
-        
-        window.firebaseApp = initializeApp(firebaseConfig);
-        window.firebaseAnalytics = getAnalytics(window.firebaseApp);
-        window.firebaseAuth = getAuth(window.firebaseApp);
-        window.firebaseDb = getFirestore(window.firebaseApp);
-        window.firebaseRtdb = getDatabase(window.firebaseApp);
-        window.firebaseStorage = getStorage(window.firebaseApp);
-        window.firebaseFunctions = getFunctions(window.firebaseApp);
     </script>
 </head>
 <body>
@@ -75,25 +45,25 @@
     <!-- Canvas para efectos UI -->
     <canvas id="ui-canvas"></canvas>
     
-    <!-- Módulo principal del juego -->
+    <!-- Módulo principal del juego - RUTAS ABSOLUTAS -->
     <script type="module">
-        import GameEngine from './client/src/core/Engine.js';
-        import InputManager from './client/src/core/InputManager.js';
-        import AudioSystem from './client/src/core/AudioSystem.js';
-        import AssetLoader from './client/src/core/AssetLoader.js';
-        import Player from './client/src/entities/Player.js';
-        import Weapon from './client/src/entities/Weapon.js';
-        import Projectile from './client/src/entities/Projectile.js';
-        import Vehicle from './client/src/entities/Vehicle.js';
-        import World from './client/src/entities/World.js';
-        import NetworkManager from './client/src/network/NetworkManager.js';
-        import LobbySystem from './client/src/network/LobbySystem.js';
-        import MatchManager from './client/src/gameplay/MatchManager.js';
-        import DamageSystem from './client/src/gameplay/DamageSystem.js';
-        import AIController from './client/src/gameplay/AIController.js';
-        import HUD from './client/src/ui/HUD.js';
-        import MenuSystem from './client/src/ui/MenuSystem.js';
-        import MobileControls from './client/src/ui/MobileControls.js';
+        import GameEngine from '/warfront-exodus/client/src/core/Engine.js';
+        import InputManager from '/warfront-exodus/client/src/core/InputManager.js';
+        import AudioSystem from '/warfront-exodus/client/src/core/AudioSystem.js';
+        import AssetLoader from '/warfront-exodus/client/src/core/AssetLoader.js';
+        import Player from '/warfront-exodus/client/src/entities/Player.js';
+        import Weapon from '/warfront-exodus/client/src/entities/Weapon.js';
+        import Projectile from '/warfront-exodus/client/src/entities/Projectile.js';
+        import Vehicle from '/warfront-exodus/client/src/entities/Vehicle.js';
+        import World from '/warfront-exodus/client/src/entities/World.js';
+        import NetworkManager from '/warfront-exodus/client/src/network/NetworkManager.js';
+        import LobbySystem from '/warfront-exodus/client/src/network/LobbySystem.js';
+        import MatchManager from '/warfront-exodus/client/src/gameplay/MatchManager.js';
+        import DamageSystem from '/warfront-exodus/client/src/gameplay/DamageSystem.js';
+        import AIController from '/warfront-exodus/client/src/gameplay/AIController.js';
+        import HUD from '/warfront-exodus/client/src/ui/HUD.js';
+        import MenuSystem from '/warfront-exodus/client/src/ui/MenuSystem.js';
+        import MobileControls from '/warfront-exodus/client/src/ui/MobileControls.js';
 
         class WarfrontExodus {
             constructor() {
@@ -299,7 +269,7 @@
     <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('client/sw.js').catch(console.error);
+            navigator.serviceWorker.register('/warfront-exodus/client/sw.js').catch(console.error);
         }
     </script>
 </body>
