@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Estilos -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="client/styles.css">
     
     <!-- Three.js y dependencias -->
     <script type="importmap">
@@ -64,12 +64,12 @@
     <canvas id="ui-canvas"></canvas>
     
     <!-- Módulo principal -->
-    <script type="module" src="src/main.js"></script>
+    <script type="module" src="client/src/main.js"></script>
     
     <!-- Service Worker para PWA -->
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(console.error);
+            navigator.serviceWorker.register('client/sw.js').catch(console.error);
         }
     </script>
 </body>
