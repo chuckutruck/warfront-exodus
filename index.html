@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Warfront: Exodus - Shooter táctico multijugador en navegador">
+    <meta name="theme-color" content="#0a0a1a">
+    
+    <title>WARFRONT: EXODUS</title>
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="client/styles.css">
+    
+    <!-- Three.js y dependencias -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyANa6zWkGrYQ7O7M6XT2oYbArsZIcs36M8",
+            authDomain: "trip-a9341.firebaseapp.com",
+            databaseURL: "https://trip-a9341-default-rtdb.firebaseio.com",
+            projectId: "trip-a9341",
+            storageBucket: "trip-a9341.firebasestorage.app",
+            messagingSenderId: "379336201132",
+            appId: "1:379336201132:web:34b0b863c3462c12aba009",
+            measurementId: "G-PJQ32ZXJ0B"
+        };
+        
+        window.firebaseApp = initializeApp(firebaseConfig);
+        window.firebaseAnalytics = getAnalytics(window.firebaseApp);
+        window.firebaseAuth = getAuth(window.firebaseApp);
+        window.firebaseDb = getFirestore(window.firebaseApp);
+        window.firebaseRtdb = getDatabase(window.firebaseApp);
+        window.firebaseStorage = getStorage(window.firebaseApp);
+        window.firebaseFunctions = getFunctions(window.firebaseApp);
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga inicial -->
+    <div id="boot-screen">
+        <div class="boot-content">
+            <h1>WARFRONT: EXODUS</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">Inicializando sistemas...</p>
+            <p class="loading-subtext">Cargando motor gráfico • Conectando a Firebase • Preparando assets</p>
+        </div>
+    </div>
+
+    <!-- Contenedor del juego (inicialmente oculto) -->
+    <div id="game-container" style="display: none;"></div>
+    
+    <!-- Canvas para efectos UI -->
+    <canvas id="ui-canvas"></canvas>
+    
+    <!-- Módulo principal del juego -->
+    <script type="module">
+        import GameEngine from './client/src/core/Engine.js';
+        import InputManager from './client/src/core/InputManager.js';
+        import AudioSystem from './client/src/core/AudioSystem.js';
+        import AssetLoader from './client/src/core/AssetLoader.js';
+        import Player from './client/src/entities/Player.js';
+        import Weapon from './client/src/entities/Weapon.js';
+        import Projectile from './client/src/entities/Projectile.js';
+        import Vehicle from './client/src/entities/Vehicle.js';
+        import World from './client/src/entities/World.js';
+        import NetworkManager from './client/src/network/NetworkManager.js';
+        import LobbySystem from './client/src/network/LobbySystem.js';
+        import MatchManager from './client/src/gameplay/MatchManager.js';
+        import DamageSystem from './client/src/gameplay/DamageSystem.js';
+        import AIController from './client/src/gameplay/AIController.js';
+        import HUD from './client/src/ui/HUD.js';
+        import MenuSystem from './client/src/ui/MenuSystem.js';
+        import MobileControls from './client/src/ui/MobileControls.js';
+
+        class WarfrontExodus {
+            constructor() {
+                this.engine = null;
+                this.input = null;
+                this.audio = null;
+                this.assets = null;
+                this.world = null;
+                this.player = null;
+                this.network = null;
+                this.lobby = null;
+                this.match = null;
+                this.damage = null;
+                this.ai = null;
+                this.hud = null;
+                this.menu = null;
+                this.mobile = null;
+                
+                this.gameState = 'boot';
+                this.isInitialized = false;
+                
+                this.init();
+            }
+
+            async init() {
+                console.log('WARFRONT: EXODUS - Iniciando secuencia de arranque...');
+                
+                try {
+                    await this.initializeEngine();
+                    await this.initializeSystems();
+                    this.setupEventListeners();
+                    
+                    this.isInitialized = true;
+                    
+                    // Ocultar pantalla de carga, mostrar menú
+                    document.getElementById('boot-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('boot-screen').style.display = 'none';
+                        document.getElementById('game-container').style.display = 'block';
+                        this.showMainMenu();
+                    }, 500);
+                    
+                    console.log('Sistema iniciado correctamente');
+                    
+                } catch (error) {
+                    console.error('Error de inicialización:', error);
+                    this.showFatalError(error.message);
+                }
+            }
+
+            async initializeEngine() {
+                this.updateLoadingText('Inicializando motor gráfico Three.js...');
+                
+                this.engine = new GameEngine();
+                await this.engine.initialize('game-container');
+                
+                this.updateLoadingProgress(25);
+            }
+
+            async initializeSystems() {
+                // Input
+                this.updateLoadingText('Configurando controles...');
+                this.input = new InputManager();
+                this.engine.input = this.input;
+                this.updateLoadingProgress(35);
+
+                // Audio
+                this.updateLoadingText('Inicializando sistema de audio...');
+                this.audio = new AudioSystem(this.engine);
+                this.engine.audio = this.audio;
+                this.updateLoadingProgress(45);
+
+                // Assets
+                this.updateLoadingText('Cargando recursos...');
+                this.assets = new AssetLoader(this.engine);
+                this.engine.assetLoader = this.assets;
+                this.updateLoadingProgress(55);
+
+                // Mundo
+                this.updateLoadingText('Generando mundo alienígena...');
+                this.world = new World(this.engine);
+                this.engine.world = this.world;
+                this.updateLoadingProgress(70);
+
+                // Red
+                this.updateLoadingText('Conectando a servidores...');
+                this.network = new NetworkManager(this.engine);
+                this.engine.network = this.network;
+                await this.network.connect();
+                this.updateLoadingProgress(80);
+
+                // Gameplay
+                this.lobby = new LobbySystem(this.network);
+                this.match = new MatchManager(this.engine);
+                this.engine.matchManager = this.match;
+                this.damage = new DamageSystem(this.engine);
+                this.engine.damageSystem = this.damage;
+                this.ai = new AIController(this.engine);
+                this.engine.aiController = this.ai;
+                this.updateLoadingProgress(90);
+
+                // UI
+                this.hud = new HUD(this.engine);
+                this.engine.hud = this.hud;
+                this.hud.toggleVisibility(false);
+                
+                this.menu = new MenuSystem(this.engine);
+                this.mobile = new MobileControls(this.engine);
+                this.updateLoadingProgress(100);
+            }
+
+            setupEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Escape') {
+                        if (this.gameState === 'playing') {
+                            this.menu.togglePause();
+                        }
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    this.engine?.onWindowResize();
+                });
+
+                window.addEventListener('beforeunload', () => {
+                    this.network?.disconnect();
+                });
+
+                window.addEventListener('error', (e) => {
+                    console.error('Error global:', e.error);
+                });
+            }
+
+            updateLoadingText(text) {
+                const el = document.querySelector('.loading-text');
+                if (el) el.textContent = text;
+            }
+
+            updateLoadingProgress(percent) {
+                const bar = document.querySelector('.loading-progress');
+                if (bar) bar.style.width = percent + '%';
+            }
+
+            showMainMenu() {
+                this.gameState = 'menu';
+                this.menu.showScreen('main');
+            }
+
+            showFatalError(message) {
+                document.getElementById('boot-screen').innerHTML = `
+                    <div class="boot-content">
+                        <h1 style="color: #ff4444;">ERROR CRÍTICO</h1>
+                        <p>${message}</p>
+                        <button onclick="location.reload()" style="
+                            padding: 15px 30px;
+                            margin-top: 20px;
+                            background: #ff4444;
+                            border: none;
+                            color: white;
+                            cursor: pointer;
+                            font-family: inherit;
+                        ">REINTENTAR</button>
+                    </div>
+                `;
+            }
+
+            async startMatch(mode, map, settings) {
+                this.gameState = 'loading';
+                this.menu.hide();
+                
+                this.hud.showNotification('Cargando partida...', 'info', 2000);
+                
+                this.match.initialize(mode, map, settings);
+                
+                const spawnPoint = this.match.spawnPoints.alpha[0];
+                this.engine.spawnLocalPlayer({
+                    position: spawnPoint,
+                    team: 'alpha'
+                });
+                
+                await this.network.joinOrCreateSession('public', settings.maxPlayers || 8);
+                
+                setTimeout(() => {
+                    this.match.startMatch();
+                    this.gameState = 'playing';
+                    this.hud.toggleVisibility(true);
+                }, 3000);
+            }
+
+            endMatch(results) {
+                this.gameState = 'menu';
+                this.hud.toggleVisibility(false);
+                this.menu.showScreen('main');
+            }
+        }
+
+        // Iniciar juego cuando DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new WarfrontExodus();
+        });
+    </script>
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('client/sw.js').catch(console.error);
+        }
+    </script>
+</body>
+</html>
