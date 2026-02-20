@@ -4,10 +4,10 @@
  * Optimizado para 60 FPS en múltiples plataformas
  */
 
-import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 class GameEngine {
     constructor() {
@@ -50,6 +50,9 @@ class GameEngine {
 
     async initialize(containerId) {
         const container = document.getElementById(containerId);
+        if (!container) {
+            throw new Error(`Contenedor #${containerId} no encontrado`);
+        }
         
         // Escena principal
         this.scene = new THREE.Scene();
@@ -76,9 +79,6 @@ class GameEngine {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
         
         container.appendChild(this.renderer.domElement);
         
